@@ -1,0 +1,30 @@
+<app-metronome/>
+
+<div class="page-cntr">
+  <div class="displayed-tonality">{{ countBuffer < countInBefore + 1 ? '---' : displayedTonality() }}</div>
+  <div id="next-tonality" >{{ nextTonality() }}</div>
+</div>
+<!-- <div style="margin-top: 10px;">
+    @for (item of pickedTonalities; track $index) {
+      <span>{{item}}</span>
+    }
+</div>
+<div>
+    @for (item of majorTonalities; track $index) {
+      <span>{{item}} </span>
+    }
+</div> -->
+
+<!-- <div *ngFor="let e of majorTonalities">{{ e }}</div>
+<div *ngFor="let item of pickedTonalities">{{ item }}</div> -->
+
+<div class="tonality-picker-cntr">
+  @for (tonality of majorTonalities; track tonality) {
+    <span
+      (click)="toggleTonality(tonality)"
+      [ngClass]="{ 'selected': isSelected(tonality), 'unselected': !isSelected(tonality) }"
+      class="tonality">
+      {{ tonality }}
+    </span>
+  }
+</div>

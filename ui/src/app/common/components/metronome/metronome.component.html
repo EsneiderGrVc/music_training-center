@@ -1,0 +1,19 @@
+<div class="metronome-cntr">
+  <div class="bpm-cntr">
+    <span id="bpm-indicator">{{ bpm }}</span>
+    <span id="bpm-label">BPM</span>
+  </div>
+  <div class="btn-cntr">
+    <button class="player" (click)="metroPlayer()">{{ playing ? 'Stop' : 'Play'}}</button>
+    <div class="velocity-btn-cntr">
+      <button class="material-icons" (click)="increaseBpm()">keyboard_arrow_up</button>
+      <button class="material-icons" (click)="decreaseBpm()">keyboard_arrow_down</button>
+    </div>
+  </div>
+</div>
+
+  <div class="leds-cntr">
+    @for (item of metronomeGraphic; track item; let idx = $index ) {
+      <div class="led" id="led-{{ idx + 1 }}"></div>
+    }
+  </div>

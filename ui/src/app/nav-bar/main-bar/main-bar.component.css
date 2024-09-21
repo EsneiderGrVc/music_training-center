@@ -1,0 +1,9 @@
+li {
+    color: var(--white-color);
+}
+ul {
+    margin: 0;
+}
+.nav-cntr {
+    height: 10%;
+}

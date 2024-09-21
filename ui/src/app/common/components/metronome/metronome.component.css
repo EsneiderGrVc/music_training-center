@@ -1,0 +1,65 @@
+.metronome-cntr {
+    position: absolute;
+    right: 20px;
+    top: 3%;
+}
+.player {
+    color: rgb(211, 211, 211);
+    background-color: unset;
+    height: 60px;
+    width: 60px;
+    border-radius: 10%;
+    cursor: pointer;
+    border: unset;
+    box-shadow: 0px 0px 0px 5px rgb(27, 27, 27);
+}
+.leds-cntr {
+    /* text-align: center; */
+    position: absolute;
+    top: 3%;
+    width: 100%;
+    display: flex;
+    gap: 1.5rem;
+    justify-content: center;
+}
+.led {
+    width: 25px;
+    height: 15px;
+    /* background-color: #ddd; */
+    border: 1px solid white;
+    color: black;
+    display: inline-block;
+    border-radius: 10px;
+}
+.bpm-cntr {
+    text-align: center;
+    color: white;
+    margin-bottom: 1.5rem;
+}
+#bpm-indicator {
+    display: block;
+    font-size: 2rem;
+}
+#bpm-label {
+    display: block;
+    font-size: .7rem;
+}
+.btn-cntr {
+    display: flex;
+    flex-direction: column;
+}
+.velocity-btn-cntr {
+    margin: 20px auto 0 auto;
+    display: flex;
+    gap: 20px;
+    flex-direction: column;
+}
+.velocity-btn-cntr button {
+    height: 50px;
+    width: 50px;
+    border-radius: 50%;
+    color: white;
+    background-color: unset;
+    border: 1px solid rgba(150, 150, 150, 0.4);
+    cursor: pointer;
+}

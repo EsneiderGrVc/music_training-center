@@ -1,0 +1,42 @@
+.page-cntr {
+    height: 90%;
+}
+.displayed-tonality {
+    margin: 0;
+    color: white;
+    font-size: 75vh;
+    text-align: center;
+    vertical-align: middle;
+}
+span {
+    color: white;
+}
+#next-tonality {
+    position: absolute;
+    right: 30%;
+    bottom: 20%;
+    font-size: 3rem;
+    color: white;
+}
+.tonality-picker-cntr {
+    display: flex;
+    position: absolute;
+    width: 100%;
+    justify-content: center;
+    box-sizing: border-box;
+    padding: 0 30px;
+    bottom: 10%;
+    /* padding: 0 5%; */
+    /* gap: 30px; */
+}
+
+.tonality-picker-cntr span:not(:last-child) {
+    flex: 1;
+
+}
+.selected {
+    color: green;
+}
+.unselected { 
+    color: rgb(198, 198, 198);
+}
