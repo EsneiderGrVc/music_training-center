@@ -1,9 +1,21 @@
 <app-metronome/>
 
 <div class="page-cntr">
-  <div class="displayed-tonality">{{ countBuffer < countInBefore + 1 ? '---' : displayedTonality() }}</div>
+  <div class="displayed-tonality">{{ countBuffer < 1 ? '-' : displayedTonality() }}</div>
   <div id="next-tonality" >{{ nextTonality() }}</div>
-</div>
+  <!-- <div style="color: white; font-weight: 500;">Selected</div>
+@for (item of selectedTonalities; track $index) {
+  <span style="margin: 3px;">{{ item }}</span>
+}
+<div style="color: white; font-weight: 500;">Picked</div>
+@for (item of pickedTonalities; track $index) {
+  <span style="margin: 3px;">{{ item }}</span>
+}
+<div style="color: white; font-weight: 500;">Playing</div>
+@for (item of playingTonalities; track $index) {
+  <span style="margin: 3px;">{{ item }}</span>
+}
+</div> -->
 <!-- <div style="margin-top: 10px;">
     @for (item of pickedTonalities; track $index) {
       <span>{{item}}</span>
@@ -17,8 +29,12 @@
 
 <!-- <div *ngFor="let e of majorTonalities">{{ e }}</div>
 <div *ngFor="let item of pickedTonalities">{{ item }}</div> -->
-
 <div class="tonality-picker-cntr">
+  <div class="leds-measure-indicator-cntr">
+    @for (measure of measureGraphic; track measure;  let idx = $index ) {
+      <div class="measure-led" id="measure-led-{{ idx }}"></div>
+    }
+  </div>
   @for (tonality of majorTonalities; track tonality) {
     <span
       (click)="toggleTonality(tonality)"

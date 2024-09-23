@@ -1,5 +1,6 @@
-import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { Howl } from 'howler';
+import { CommonModule, isPlatformBrowser } from "@angular/common";
+import { FormsModule } from "@angular/forms";
+import { Howl } from "howler";
 import {
   Component,
   EventEmitter,
@@ -8,64 +9,60 @@ import {
   Output,
   PLATFORM_ID,
   signal,
-} from '@angular/core';
-import { interval, Observable, startWith, Subscription } from 'rxjs';
-import { MetronomeService } from '../../services/metronome.service';
+} from "@angular/core";
+import { interval, Observable, startWith, Subscription } from "rxjs";
+import { MetronomeService } from "../../services/metronome.service";
+import { MetroParams } from "../../models/metro-params.interface";
 
-export type Accent = 'green' | 'yellow' | 'red';
+export type Accent = "green" | "yellow" | "red";
 
 export interface Beat {
   accent: Accent;
   idx: number;
 }
 
-export interface MetroParams {
-  bpm: number;
-  numerator: number;
-  denominator: number;
-  minute: number;
-}
-
 @Component({
-  selector: 'app-metronome',
+  selector: "app-metronome",
   standalone: true,
-  imports: [CommonModule],
-  templateUrl: './metronome.component.html',
-  styleUrl: './metronome.component.css',
+  imports: [CommonModule, FormsModule],
+  templateUrl: "./metronome.component.html",
+  styleUrl: "./metronome.component.css",
 })
 export class MetronomeComponent implements OnInit {
   @Output() metronomeStarted = new EventEmitter<MetroParams>();
   @Output() metronomeStoped = new EventEmitter();
 
+  public metroProps: MetroParams;
   private sound?: Howl;
   public audio?: HTMLAudioElement;
   public numerator = 4;
   public denominator = 4;
-  public bpm = 90;
   private minute = 60000;
   public playing = false;
   public metroSubscription$?: Subscription;
   public currentBeat = signal(1);
-  private timeInterval = this.minute / this.bpm;
   public metronomeGraphic: Beat[] = [];
 
-  constructor(private metroService: MetronomeService) {}
+  constructor(private metroService: MetronomeService) {
+    this.metroProps = this.metroService.getMetroProps();
+  }
 
   ngOnInit(): void {
     this.metronomeGraphic = Array.from(
       { length: this.numerator },
       (_, index) => {
         if (index === 0) {
-          return { accent: 'red', idx: index + 1 };
+          return { accent: "red", idx: index + 1 };
         } else {
-          return { accent: 'green', idx: index + 1 };
+          return { accent: "green", idx: index + 1 };
         }
       }
     );
   }
+
   private loadMetroSound() {
     this.sound = new Howl({
-      src: ['assets/metro.wav'],
+      src: ["assets/metro.wav"],
       volume: 1.0,
     });
   }
@@ -77,8 +74,8 @@ export class MetronomeComponent implements OnInit {
     this.playing = true;
 
     // this.currentBeat.set(-1);
-    this.metroSubscription$ = interval(60000 / this.bpm)
-      .pipe(startWith(0))
+    this.metroSubscription$ = interval(60000 / this.metroProps.bpm)
+      // .pipe(startWith(1))
       .subscribe(() => {
         this.metroService.metronomePlayer.next(this.currentBeat());
         this.playMetro();
@@ -92,11 +89,11 @@ export class MetronomeComponent implements OnInit {
     if (led) {
       led.style.backgroundColor =
         this.metronomeGraphic.find((beat) => beat.idx === this.currentBeat())
-          ?.accent || 'green';
+          ?.accent || "green";
     }
     setTimeout(() => {
       if (led) {
-        led.style.backgroundColor = 'unset';
+        led.style.backgroundColor = "unset";
       }
     }, 150);
     this.currentBeat.update((value) => this.computeCurrentBeat(value));
@@ -114,12 +111,22 @@ export class MetronomeComponent implements OnInit {
     return value < this.numerator ? value + 1 : 1;
   }
 
+  public onBpmChange(event: Event) {
+    this.stopMetro();
+    const value = (event.target as HTMLInputElement).value;
+    this.metroService.setMetroProps("bpm", Number(value));
+  }
+
   public increaseBpm() {
     this.stopMetro();
-    this.bpm = this.bpm + 1;
+    const value = this.metroProps.bpm + 1;
+    this.metroProps.bpm++;
+    this.metroService.setMetroProps("bpm", value);
   }
   public decreaseBpm() {
     this.stopMetro();
-    this.bpm = this.bpm - 1;
+    const value = this.metroProps.bpm - 1;
+    this.metroProps.bpm--;
+    this.metroService.setMetroProps("bpm", value);
   }
 }

@@ -1,15 +1,14 @@
-import { Injectable } from '@angular/core';
-import { interval, Observable, Subject, Subscription } from 'rxjs';
-import { MetroParams } from '../../common/components/metronome/metronome.component';
+import { Injectable } from "@angular/core";
+import { interval, Observable, Subject, Subscription } from "rxjs";
 import {
   MetronomeService,
   metronomeStatus,
-} from '../../common/services/metronome.service';
+} from "../../common/services/metronome.service";
 
-export type metroStatus = 'PLAY' | 'STOP';
+export type metroStatus = "PLAY" | "STOP";
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: "root",
 })
 export class HarmonyTrainerService {
   private harmonyTrainerPlayer = new Subject<metronomeStatus>();
@@ -26,7 +25,7 @@ export class HarmonyTrainerService {
     const intervalValue = (60000 / bpm) * measuresQuantity;
     this.harmonyTrainer = interval(intervalValue);
     this.harmonyTrainer$ = this.harmonyTrainer.subscribe(() => {
-      this.harmonyTrainerPlayer.next('PLAY');
+      this.harmonyTrainerPlayer.next("PLAY");
     });
   }
 

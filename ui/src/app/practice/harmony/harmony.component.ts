@@ -1,13 +1,12 @@
-import { Component, NgZone, OnInit, signal } from '@angular/core';
-import { interval, Observable, Subscription } from 'rxjs';
-import { MetroParams } from '../../common/components/metronome/metronome.component';
-import { MetronomeService } from '../../common/services/metronome.service';
-import { HarmonyTrainerService } from '../services/harmony-trainer.service';
+import { Component, NgZone, OnInit, signal } from "@angular/core";
+import { interval, Observable, Subscription } from "rxjs";
+import { MetronomeService } from "../../common/services/metronome.service";
+import { HarmonyTrainerService } from "../services/harmony-trainer.service";
 
 @Component({
-  selector: 'app-harmony',
-  templateUrl: './harmony.component.html',
-  styleUrl: './harmony.component.css',
+  selector: "app-harmony",
+  templateUrl: "./harmony.component.html",
+  styleUrl: "./harmony.component.css",
 })
 export class HarmonyComponent implements OnInit {
   public numerator = 4;
@@ -17,44 +16,45 @@ export class HarmonyComponent implements OnInit {
 
   public metronomeGraphic: number[] = [];
 
-  public displayedTonality = signal('');
+  public displayedTonality = signal("");
   public pickedTonalities: string[] = [];
   public countInBefore = 4;
   public countBuffer = 0;
   public availableTonalities = [
-    'Gb',
-    'Db',
-    'Ab',
-    'Eb',
-    'Bb',
-    'F',
-    'C',
-    'G',
-    'D',
-    'A',
-    'E',
-    'B',
+    "Gb",
+    "Db",
+    "Ab",
+    "Eb",
+    "Bb",
+    "F",
+    "Do",
+    "Sol",
+    "Re",
+    "A",
+    "E",
+    "B",
   ];
   public majorTonalities = [
-    'Gb',
-    'Db',
-    'Ab',
-    'Eb',
-    'Bb',
-    'F',
-    'C',
-    'G',
-    'D',
-    'A',
-    'E',
-    'B',
+    "Gb",
+    "Db",
+    "Ab",
+    "Eb",
+    "Bb",
+    "F",
+    "Do",
+    "Sol",
+    "Re",
+    "A",
+    "E",
+    "B",
   ];
   public selectedTonalities: string[] = [];
-  private playingTonalities: string[] = [];
+  public playingTonalities: string[] = [];
 
-  public nextTonality = signal('');
+  public nextTonality = signal("");
+  public measureGraphic: number[] = [];
 
-  private hTSubscription?: Subscription;
+  private metroSubscription?: Subscription;
   public isInitial = true;
 
   constructor(
@@ -63,41 +63,40 @@ export class HarmonyComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // this.tonalityPicker();
-    // this.tonalityPicker();
-    // this.metroService.metronomePlayer.subscribe((currentBeat) => {
-    //   console.log(this.countBuffer);
-    //   if (
-    //     (this.countInBefore <= this.countBuffer &&
-    //       this.countBuffer % (this.numerator * this.changeTonalityOn) === 0 &&
-    //       this.countBuffer !== 0) ||
-    //     this.countBuffer === this.numerator
-    //   ) {
-    //     this.swapNextToDisplayed();
-    //   }
-    //   this.countBuffer++;
-    // });
-    // this.metroService.metronomeStoped.subscribe(() => {
-    //   this.countBuffer = 0;
-    // });
+    this.measureGraphic = Array.from(
+      { length: this.changeTonalityOn },
+      (_, index) => index + 1
+    );
   }
   private setHarmonyTrainer() {
+    this.displayedTonality.set("");
+    this.nextTonality.set("");
+    this.countBuffer = this.countInBefore * -1;
     this.playingTonalities = [...this.selectedTonalities];
     this.tonalityPicker();
     this.tonalityPicker();
-    this.metroService.metronomePlayer.subscribe((currentBeat) => {
-      if (
-        (this.countInBefore <= this.countBuffer &&
-          this.countBuffer % (this.numerator * this.changeTonalityOn) === 0 &&
-          this.countBuffer !== 0) ||
-        this.countBuffer === this.numerator
-      ) {
-        this.swapNextToDisplayed();
+    this.metroSubscription = this.metroService.metronomePlayer.subscribe(
+      (currentBeat) => {
+        const ledIdx =
+          (this.countBuffer / this.numerator) % this.changeTonalityOn;
+        if (ledIdx === 0) {
+          const measureLeds = document.querySelectorAll(".measure-led");
+          measureLeds.forEach(
+            (e) => ((e as HTMLElement).style.backgroundColor = "unset")
+          );
+        }
+        if (Number.isInteger(ledIdx)) {
+          const led = document.getElementById(`measure-led-${ledIdx}`);
+          if (led) led.style.backgroundColor = "gray";
+        }
+        if (this.countBuffer % (this.numerator * this.changeTonalityOn) === 0) {
+          this.swapNextToDisplayed();
+        }
+        this.countBuffer++;
       }
-      this.countBuffer++;
-    });
+    );
     this.metroService.metronomeStoped.subscribe(() => {
-      this.countBuffer = 0;
+      this.countBuffer = this.countInBefore * -1;
     });
   }
 
@@ -137,18 +136,31 @@ export class HarmonyComponent implements OnInit {
 
   public toggleTonality(tonality: string) {
     if (this.selectedTonalities.includes(tonality)) {
-      // Remove tonality if already selected
       this.selectedTonalities = this.selectedTonalities.filter(
         (item) => item !== tonality
       );
+      this.pickedTonalities = this.pickedTonalities.filter(
+        (item) => item !== tonality
+      );
+      this.playingTonalities = this.playingTonalities.filter(
+        (item) => item !== tonality
+      );
     } else {
-      // Add tonality if not selected
       this.selectedTonalities.push(tonality);
-      if (this.selectedTonalities.length > 2) {
-        console.log(this.availableTonalities);
-        this.setHarmonyTrainer();
-      }
     }
+    if (this.selectedTonalities.length > 2) {
+      this.resetHarmonyTrainer();
+      this.setHarmonyTrainer();
+    } else {
+      this.nextTonality.set("");
+      this.displayedTonality.set("");
+    }
+  }
+
+  public resetHarmonyTrainer() {
+    this.metroSubscription?.unsubscribe();
+    this.playingTonalities = [];
+    this.pickedTonalities = [];
   }
 
   public isSelected(tonality: string): boolean {

@@ -1,13 +1,17 @@
 <div class="metronome-cntr">
   <div class="bpm-cntr">
-    <span id="bpm-indicator">{{ bpm }}</span>
+    <input (input)="onBpmChange($event)" type="number" [(ngModel)]="metroProps.bpm" id="bpm-indicator"/>
     <span id="bpm-label">BPM</span>
   </div>
   <div class="btn-cntr">
-    <button class="player" (click)="metroPlayer()">{{ playing ? 'Stop' : 'Play'}}</button>
+    @if (playing) {
+      <button class="player material-icons" (click)="metroPlayer()"><span>stop</span></button>
+    } @else {
+      <button class="player material-icons" (click)="metroPlayer()"><span>play_arrow</span></button>
+    }
     <div class="velocity-btn-cntr">
-      <button class="material-icons" (click)="increaseBpm()">keyboard_arrow_up</button>
-      <button class="material-icons" (click)="decreaseBpm()">keyboard_arrow_down</button>
+      <button class="material-icons" (click)="increaseBpm()"><span>keyboard_arrow_up</span></button>
+      <button class="material-icons" (click)="decreaseBpm()"><span>keyboard_arrow_down</span></button>
     </div>
   </div>
 </div>
