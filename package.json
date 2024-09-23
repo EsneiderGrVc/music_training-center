@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "firebase-tools": "^13.18.0",
+    "localtunnel": "^2.0.2"
+  }
+}
