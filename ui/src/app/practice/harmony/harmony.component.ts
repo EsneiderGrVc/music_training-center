@@ -1,7 +1,14 @@
-import { Component, NgZone, OnInit, signal } from "@angular/core";
+import {
+  Component,
+  NgZone,
+  OnInit,
+  signal,
+  WritableSignal,
+} from "@angular/core";
 import { interval, Observable, Subscription } from "rxjs";
 import { MetronomeService } from "../../common/services/metronome.service";
 import { HarmonyTrainerService } from "../services/harmony-trainer.service";
+import { HarmonyParams } from "../../common/models/harmony-params.interface";
 
 @Component({
   selector: "app-harmony",
@@ -11,7 +18,7 @@ import { HarmonyTrainerService } from "../services/harmony-trainer.service";
 export class HarmonyComponent implements OnInit {
   public numerator = 4;
   // public denominator = 4;
-  public changeTonalityOn = 4;
+
   public measureInterval$: any;
 
   public metronomeGraphic: number[] = [];
@@ -56,15 +63,20 @@ export class HarmonyComponent implements OnInit {
 
   private metroSubscription?: Subscription;
   public isInitial = true;
+  public harmonyProps: HarmonyParams;
+  public bars: WritableSignal<number>;
 
   constructor(
     private harmonyTrainerService: HarmonyTrainerService,
     private metroService: MetronomeService
-  ) {}
+  ) {
+    this.harmonyProps = this.harmonyTrainerService.getHarmonyProps();
+    this.bars = signal(this.harmonyProps.bars);
+  }
 
   ngOnInit(): void {
     this.measureGraphic = Array.from(
-      { length: this.changeTonalityOn },
+      { length: this.bars() },
       (_, index) => index + 1
     );
   }
@@ -77,8 +89,7 @@ export class HarmonyComponent implements OnInit {
     this.tonalityPicker();
     this.metroSubscription = this.metroService.metronomePlayer.subscribe(
       (currentBeat) => {
-        const ledIdx =
-          (this.countBuffer / this.numerator) % this.changeTonalityOn;
+        const ledIdx = (this.countBuffer / this.numerator) % this.bars();
         if (ledIdx === 0) {
           const measureLeds = document.querySelectorAll(".measure-led");
           measureLeds.forEach(
@@ -89,7 +100,7 @@ export class HarmonyComponent implements OnInit {
           const led = document.getElementById(`measure-led-${ledIdx}`);
           if (led) led.style.backgroundColor = "gray";
         }
-        if (this.countBuffer % (this.numerator * this.changeTonalityOn) === 0) {
+        if (this.countBuffer % (this.numerator * this.bars()) === 0) {
           this.swapNextToDisplayed();
         }
         this.countBuffer++;
@@ -165,5 +176,16 @@ export class HarmonyComponent implements OnInit {
 
   public isSelected(tonality: string): boolean {
     return this.selectedTonalities.includes(tonality);
+  }
+
+  public onBarsChange(event: Event) {
+    // this.stopMetro();
+    const value = (event.target as HTMLInputElement).value;
+    this.harmonyTrainerService.setHarmonyProps("bars", Number(value));
+    this.bars.set(Number(value));
+    this.measureGraphic = Array.from(
+      { length: this.bars() },
+      (_, index) => index + 1
+    );
   }
 }

@@ -30,6 +30,11 @@
 <!-- <div *ngFor="let e of majorTonalities">{{ e }}</div>
 <div *ngFor="let item of pickedTonalities">{{ item }}</div> -->
 <div class="tonality-picker-cntr">
+  <div class="bars-cntr">
+    <div class="bars-label">Bars:
+      <input (input)="onBarsChange($event)" type="number" [(ngModel)]="harmonyProps.bars" id="bars-indicator"/>
+    </div>
+  </div>
   <div class="leds-measure-indicator-cntr">
     @for (measure of measureGraphic; track measure;  let idx = $index ) {
       <div class="measure-led" id="measure-led-{{ idx }}"></div>

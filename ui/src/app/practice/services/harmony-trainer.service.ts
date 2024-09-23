@@ -4,6 +4,10 @@ import {
   MetronomeService,
   metronomeStatus,
 } from "../../common/services/metronome.service";
+import {
+  HarmonyParams,
+  HarmonyParams_Set,
+} from "../../common/models/harmony-params.interface";
 
 export type metroStatus = "PLAY" | "STOP";
 
@@ -13,6 +17,9 @@ export type metroStatus = "PLAY" | "STOP";
 export class HarmonyTrainerService {
   private harmonyTrainerPlayer = new Subject<metronomeStatus>();
   public harmonyTrainerPlayer$ = this.harmonyTrainerPlayer.asObservable();
+  private defaultHarmonyProps: HarmonyParams = {
+    bars: 4,
+  };
 
   public harmonyTrainer?: Observable<number>;
   public harmonyTrainer$?: Subscription;
@@ -31,5 +38,24 @@ export class HarmonyTrainerService {
 
   public getHarmonyTrainer(): Observable<number> | undefined {
     return this.harmonyTrainer;
+  }
+
+  public getHarmonyProps() {
+    return JSON.parse(
+      localStorage.getItem("harmonyProps") ||
+        JSON.stringify(this.defaultHarmonyProps)
+    );
+  }
+  public setHarmonyProps(property: HarmonyParams_Set, value: number): void {
+    const harmonyProps: { [key: string]: number } =
+      this.getHarmonyProps() as any;
+    harmonyProps[property] = value;
+    if (!(property in harmonyProps)) {
+      console.error(
+        `${property} is not a know property of Metronome Properties`
+      );
+      return;
+    }
+    localStorage.setItem("harmonyProps", JSON.stringify(harmonyProps));
   }
 }

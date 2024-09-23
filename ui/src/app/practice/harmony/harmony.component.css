@@ -62,3 +62,21 @@ span {
     display: inline-block;
     border-radius: 10px;
 }
+.bars-cntr {
+    display: flex;
+    justify-content: start;
+    width: 100%;
+}
+.bars-label {
+    font-size: 1.5rem;
+    color: rgb(185, 185, 185);
+}
+#bars-indicator {
+    display: inline-block;
+    font-size: 1.5rem;
+    background-color: unset;
+    width: 3ch;
+    border: unset;
+    color: white;
+    text-align: center;
+}
